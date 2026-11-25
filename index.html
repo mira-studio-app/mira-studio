@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mira AI Studio — Free Photorealistic AI Portrait &amp; Companion Studio</title>
+<meta name="description" content="Mira AI Studio — Next-gen photorealistic AI studio with 94+ poses, visual wardrobe, custom characters, dual references, and lossless PNG output. 18+ Adults Only.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Mira AI Studio">
+<meta property="og:description" content="Photorealistic AI Studio · 94+ Poses · Visual Wardrobe · Custom Characters">
+<meta property="og:type" content="website">
+<style>
+  :root { --bg:#0d0b15; --card:#171326; --border:#342a52; --fg:#f8f2fa; --muted:#a99fc2; --pink:#ff2d87; --cyan:#8fd3f4; }
+  * { box-sizing:border-box; }
+  body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; background:radial-gradient(circle at top,#28123d 0%,var(--bg) 60%); color:var(--fg); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,sans-serif; }
+  .box { max-width:440px; width:100%; background:rgba(23,19,38,.95); border:1px solid var(--border); border-radius:20px; padding:26px 22px; text-align:center; box-shadow:0 16px 48px rgba(0,0,0,.45); }
+  .brand { font-size:26px; font-weight:800; background:linear-gradient(90deg,var(--pink),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
+  .sub { font-size:13.5px; color:var(--muted); line-height:1.6; margin-bottom:18px; }
+  .status { font-size:13px; color:var(--cyan); background:rgba(143,211,244,.1); border:1px solid rgba(143,211,244,.28); border-radius:12px; padding:10px 12px; margin-bottom:16px; }
+  .btn { display:block; width:100%; padding:13px; border:none; border-radius:12px; font-size:15px; font-weight:800; color:#fff; text-decoration:none; background:linear-gradient(135deg,#ff2d87,#9d34ff); box-shadow:0 6px 24px rgba(255,45,135,.35); cursor:pointer; }
+  .btn.hidden { display:none; }
+  .retry { margin-top:10px; background:transparent; color:var(--cyan); border:1px solid var(--border); padding:9px 14px; border-radius:10px; font-size:13px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="brand">✦ Mira AI Studio</div>
+  <div class="sub">Photorealistic AI Studio (18+) · 94+ Poses · Visual Wardrobe · Custom Characters</div>
+  <div id="status" class="status">⏳ Connecting to live Mira Studio server...</div>
+  <a id="enterBtn" class="btn hidden" href="#">🚀 Enter Mira AI Studio (18+)</a>
+  <button id="retryBtn" class="retry" onclick="checkLive()">🔄 Check Again / تلاش مجدد</button>
+</div>
+<script>
+async function checkLive() {
+  const st = document.getElementById('status');
+  const btn = document.getElementById('enterBtn');
+  st.textContent = '⏳ Connecting to live Mira Studio server...';
+  btn.classList.add('hidden');
+  try {
+    const r = await fetch('./live.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) throw new Error('offline');
+    const data = await r.json();
+    const url = (data && typeof data.url === 'string') ? data.url.trim() : '';
+    if (!url.startsWith('https://')) throw new Error('offline');
+    btn.href = url;
+    btn.classList.remove('hidden');
+    st.textContent = '✅ Studio is live! Redirecting you now...';
+    setTimeout(() => { window.location.replace(url); }, 600);
+  } catch (e) {
+    st.textContent = '⏳ Mira Studio is currently offline. Please check back in a few minutes. / سایت الان آفلاین است، چند دقیقه بعد دوباره امتحان کنید.';
+  }
+}
+checkLive();
+</script>
+</body>
+</html>
