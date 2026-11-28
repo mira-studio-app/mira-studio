@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none';">
 <title>Mira AI Studio — Free Photorealistic AI Portrait &amp; Companion Studio</title>
 <meta name="description" content="Mira AI Studio — Next-gen photorealistic AI studio with 94+ poses, visual wardrobe, custom characters, dual references, and lossless PNG output. 18+ Adults Only.">
 <meta name="robots" content="index, follow">
@@ -27,10 +29,27 @@
   <div class="brand">✦ Mira AI Studio</div>
   <div class="sub">Photorealistic AI Studio (18+) · 94+ Poses · Visual Wardrobe · Custom Characters</div>
   <div id="status" class="status">⏳ Connecting to live Mira Studio server...</div>
-  <a id="enterBtn" class="btn hidden" href="#">🚀 Enter Mira AI Studio (18+)</a>
+  <a id="enterBtn" class="btn hidden" href="#" rel="noopener noreferrer">🚀 Enter Mira AI Studio (18+)</a>
   <button id="retryBtn" class="retry" onclick="checkLive()">🔄 Check Again / تلاش مجدد</button>
 </div>
 <script>
+// Only redirect to explicitly allowlisted domains (prevents Open Redirect / phishing if live.json is tampered with).
+const ALLOWED_HOST_SUFFIXES = ['.trycloudflare.com'];
+const ALLOWED_EXACT_HOSTS = []; // Add your custom Named Tunnel domain here, e.g. 'studio.yourdomain.com'
+
+function isAllowedTarget(rawUrl) {
+  try {
+    const u = new URL(rawUrl);
+    if (u.protocol !== 'https:') return false;
+    const host = (u.hostname || '').toLowerCase();
+    if (!host) return false;
+    if (ALLOWED_EXACT_HOSTS.includes(host)) return true;
+    return ALLOWED_HOST_SUFFIXES.some(sfx => host.endsWith(sfx) && host.length > sfx.length);
+  } catch (_) {
+    return false;
+  }
+}
+
 async function checkLive() {
   const st = document.getElementById('status');
   const btn = document.getElementById('enterBtn');
@@ -41,7 +60,7 @@ async function checkLive() {
     if (!r.ok) throw new Error('offline');
     const data = await r.json();
     const url = (data && typeof data.url === 'string') ? data.url.trim() : '';
-    if (!url.startsWith('https://')) throw new Error('offline');
+    if (!isAllowedTarget(url)) throw new Error('blocked');
     btn.href = url;
     btn.classList.remove('hidden');
     st.textContent = '✅ Studio is live! Redirecting you now...';
